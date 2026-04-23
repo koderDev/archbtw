@@ -1,3 +1,5 @@
+// # TODO: neofetch, arrow key command history,tab completion,loreeeeee
+
 const term=document.getElementById('term');
 
 function printf(txt,cls=''){
@@ -5,7 +7,11 @@ function printf(txt,cls=''){
     if(cls) {
         const s=document.createElement("span");
         s.className=cls;
-        s.textContent=txt;
+        if(txt===''){
+            s.innerHTML='&nbsp;'
+        }else {
+            s.textContent=txt
+        }
         d.appendChild(s)
     } else {
         d.textContent=txt;
@@ -42,7 +48,24 @@ function prompt(){
 
 const CMDS = {
     echo: (a) => printf(a.join(' ')),
-    clear: () => { term.innerHTML = ''; }
+    clear: () => { term.innerHTML = ''; },
+    help: () => {
+        [
+            ['w','archBTW, version 1.0.1-release'],
+            ['gr','Type `help` to see the list of commands.'],
+            ['gr','Type `help name` to find out more about the command.'],
+            ['b',''],
+            ['',' echo <text>   print to screen'],
+            ['',' clear         clears screen'],
+            ['',' whoami        who r u???'],
+            ['',' help          list of commands'],
+            ['b',''],
+        ].forEach(([c,t])=>printf(t,c));
+    },
+    whoami: ()=>{
+        printf('...the system doesn\'t recognize u.','b');
+    }
+
 };
 
 function run(c) {
@@ -55,15 +78,15 @@ function run(c) {
         CMDS[cmd](args);
     }
     else {
-        printf(cmd + ": cmd not found","r");
+        printf(cmd + ": cmd not found","gr");
     }
     prompt();
 }
 
 [
-    ['b',' welcome to archBTW'],
-    ['',' someone left this terminal unlocked..'],
-    ['y',' type: echo hello'],
+    ['b','welcome to archBTW'],
+    ['','someone left this terminal unlocked..'],
+    ['y','type: help'],
 ].forEach(([c,t]) =>printf(t,c))
 printf('')
 prompt();
