@@ -1,4 +1,4 @@
-// # TODO: neofetch, arrow key command history,tab completion,loreeeeee
+// # TODO: neofetch, arrow key command history,tab completion,loreeeeee, add cowsay,
 
 const term=document.getElementById('term');
 
@@ -58,12 +58,63 @@ const CMDS = {
             ['',' echo <text>   print to screen'],
             ['',' clear         clears screen'],
             ['',' whoami        who r u???'],
+            ['',' neofetch      system info with coool art'],
             ['',' help          list of commands'],
             ['b',''],
         ].forEach(([c,t])=>printf(t,c));
     },
     whoami: ()=>{
         printf('...the system doesn\'t recognize u.','b');
+    },
+    neofetch:()=>{
+        const art = [
+            '                   ',
+            '      /\\          ',
+            '     /  \\         ',
+            '    /\\   \\       ',
+            '   /      \\       ',
+            '  /   \'\'   \\    ',
+            ' /   |  |   \\     ',
+            '/_-\'\'    \'\'-_\\'
+        ];
+
+        const info =[
+            ['','user@archbtw'],
+            ['','- - - - - - -'],
+            ['OS:       ','Arch Linux x86_64'],
+            ['Host:     ','archbtw'],
+            ['Kernel:   ','0.6.7-arch1-1'],
+            ['Shell:    ','bazsh 1.0.0'],
+            ['Terminal: ','archbtw-term'],
+            ['CPU:      ','unknown @ 4.2Ghz'],
+            ['Memory:   ','1.2Mib/64Mib'],
+            ['',''],
+        ]
+
+        const cycleclrs=['b','g','r','y','m'];
+        const logoclr=cycleclrs[Math.floor(Math.random()*cycleclrs.length)];
+        const rows=Math.max(art.length,info.length);
+        for (let i=0;i<rows;i++){
+            const a=(art[i]||'').padEnd(20);
+            const [lbl,val]=info[i]||['',''];
+            const d=document.createElement("div");
+            const artspan=document.createElement('span')
+            artspan.className=logoclr;
+            artspan.textContent=a;
+
+            const lblspan=document.createElement('lblspan')
+            lblspan.textContent=lbl;
+            const vspan=document.createElement('span')
+            vspan.className=i===0?logoclr:'';
+            vspan.textContent=val;
+
+            d.appendChild(artspan)
+            d.appendChild(lblspan)
+            d.appendChild(vspan)
+            term.appendChild(d)
+        }
+        printf('');
+        
     }
 
 };
@@ -83,6 +134,8 @@ function run(c) {
     prompt();
 }
 
+//BOOOTTT
+CMDS.neofetch();
 [
     ['b','welcome to archBTW'],
     ['','someone left this terminal unlocked..'],
