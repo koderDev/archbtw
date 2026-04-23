@@ -15,16 +15,19 @@ function printf(txt,cls=''){
 }
 
 function prompt(){
+    const promptc=document.createElement("div");
+    promptc.classList.add("prompt");
+    term.appendChild(promptc);
     const p=document.createElement("div");
-    p.innerHTML='<span class="g">user@archbtw</span> <span class="b">~</span> <span class="m">(main)</span>';
-    term.appendChild(p);
+    p.innerHTML='<span class="g">user@archbtw</span> <span class="r">TTY1</span> <span class="y">~</span> <span class="b">(main)</span>';
+    promptc.appendChild(p);
     const row=document.createElement("div")
     row.id='input-row';
-    row.innerHTML='<span>$ </span>';
+    row.innerHTML=`<span>$&nbsp;</span>`;
     const inp=document.createElement('input')
     inp.id= 'inp';
     row.appendChild(inp)
-    term.appendChild(row)
+    promptc.appendChild(row)
     inp.focus()
     inp.addEventListener('keydown',e=>{
         if(e.key!=="Enter") return;
@@ -32,7 +35,7 @@ function prompt(){
         row.remove();
         const done=document.createElement('div');
         done.textContent='$ '+v;
-        term.appendChild(done);
+        promptc.appendChild(done);
         run(v);
     })
 }
@@ -52,7 +55,7 @@ function run(c) {
         CMDS[cmd](args);
     }
     else {
-        printf("archbtw: " + cmd + ": cmd not found","r");
+        printf(cmd + ": cmd not found","r");
     }
     prompt();
 }
