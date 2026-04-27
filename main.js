@@ -3,7 +3,7 @@ let history=[],histidx=-1;
 let CWD='~';
 const FS={
     '~':{
-        dirs: ['mypc','downloads','documents'],files:[]
+        dirs: ['mypc','downloads','documents','repo-archbtw'],files:[]
     },
     '~/mypc':{
         dirs: [], files: ['readme.txt','lore.md']
@@ -14,9 +14,25 @@ const FS={
     '~/documents': {
         dirs: [], files: ['report.txt']
     },
-    '~/code': {
-        dirs: ['project-archbtw'],files:[]
-    }
+}
+
+const FILES= {
+    'readme.txt': [
+        'this system was not meant to be found.',
+        'try: cat lore.md'
+    ],
+    'lore.md': [
+        'ENTERED THE RABIIT HOLE o_0',
+        'there are seven layers to this project.you are on layer 1.',
+        'the map is a tree. HINT: type `tree`'
+    ],
+    'report.txt': [
+        'this is MY business report.',
+        'none of YOUR business. :P'
+    ],
+    'dontopenme.tar.gz': [
+        'binary: corrupted. not yet.'
+    ],
 }
 // # TODO: loreeeeee, add cowsay, virtual fs also
 
@@ -186,7 +202,9 @@ const CMDS = {
             printf('(empty)','b');
             return;
         } 
-        node.dirs.forEach(d=>printf(' '+d,'b'))
+        node.dirs.forEach(d=> {
+            printf(' '+d+'/','b');
+        })
         node.files.forEach(f=> printf(' '+f));
     }, 
 
@@ -200,12 +218,37 @@ const CMDS = {
             CWD='~';
             return;
         }
+        if(trgt==='repo-archbtw'){
+            printf("opening project repo...",'b')
+            setTimeout(()=>{
+                window.open('https://github.com/koderDev/archbtw','_blank');
+                printf("launched in new tab.",'g');
+                printf('');
+                prompt();
+            },500);
+            return 'async';
+        }
         const next = CWD+'/'+trgt;
         if(FS[next]){
             CWD=next;
         }
         else {
             printf('cd: '+trgt+' [no such file or directory]','r');
+        }
+
+    },
+
+    cat: (args) =>{
+        const name=args[0];
+        if(!name) {
+            printf('cat: missing operand','r');
+            return;
+        } 
+        const content=FILES[name]
+        if(content) {
+            content.forEach(lo=>printf(lo));
+        } else {
+            printf('cat: '+name+' [no such file]','r');
         }
     }
 
@@ -217,12 +260,16 @@ function run(c) {
         return;
     } 
     const [cmd, ...args]=c.split(' ');
+    let res;
     if(CMDS[cmd]) {
-        CMDS[cmd](args);
+        res=CMDS[cmd](args);
     }
     else {
         printf(cmd + ": cmd not found","gr");
     }
+
+    if(res==='async') return;
+    printf('')
     prompt();
 }
 
