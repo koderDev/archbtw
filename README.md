@@ -13,9 +13,14 @@
 - echo <text>   prints text to screen
 - help          to see list of commands available
 - ls            list files under the directory
-- neofetch      system info with awesome ascii art
-- pwd           prints the current working directory
-- whoami        who r u??? 
+- mkdir <dir>    create a new directory
+- neofetch       system info with coool art
+- rm <file>      remove a file
+- rm -r <dir>    remove a directory
+- touch <file>   create a new empty file
+- tree           visual hierarchy of files
+- pwd            prints the current working directory
+- whoami         who r u???
 ```
 
 ### learnings
@@ -28,6 +33,8 @@
 #### v1.0.5
 - finally working on a fake file system for this project. 
 - i have added ls, cd and pwd commands. the filesystem they list the directories on, is a fake one, which is simply a js object lol. but that does its job.
+- i have added mkdir, touch and rm commands with proper syntax like the real terminal has. spent a lot of time on this.
+- tree command has been added which lists out the visual hierarchy of the files in the current working directory.
 
 #### v1.0.4
 - i have added tab completion. it basically completes the commands when u type a character of it and press tab, e.g. if i type `e` and press tab then it autocompletes it into `echo`. there's a catch, if there are more than one commands with the same characters like `neofetch`  and `name` then it only autocompletes when the alphabet after the common one has been typed. not sure how to fix this, will prob fix in future updates.

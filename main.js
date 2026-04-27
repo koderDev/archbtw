@@ -3,10 +3,10 @@ let history=[],histidx=-1;
 let CWD='~';
 const FS={
     '~':{
-        dirs: ['mypc','downloads','documents','repo-archbtw'],files:[]
+        dirs: ['mypc','downloads','documents','repo-archbtw'],files:['readme.txt','lore.md'], hidden: ['.hidden_logs','.secret']
     },
     '~/mypc':{
-        dirs: [], files: ['readme.txt','lore.md']
+        dirs: ['ucantopenme'], files: []
     },
     '~/downloads': {
         dirs: [], files: ['dontopenme.tar.gz']
@@ -33,6 +33,15 @@ const FILES= {
     'dontopenme.tar.gz': [
         'binary: corrupted. not yet.'
     ],
+    '.hidden_logs': [
+        '[ERROR] unauthorized access',
+        '[INFO] origin: UNKNOWN',,
+        '[INFO] why do they always find this file...'
+    ],
+    '.secret': [
+        'im an open book',
+        'no secrets :D',
+    ]
 }
 // # TODO: loreeeeee, add cowsay, virtual fs also
 
@@ -124,15 +133,20 @@ const CMDS = {
         [
             ['w','archBTW, version 1.0.1-release'],
             ['gr','Type `help` to see the list of commands.'],
-            ['gr','Type `help name` to find out more about the command.'],
+            // TODO: add this thing later on ... ['gr','Type `help name` to find out more about the command.'],
             ['b',''],
             ['',' cd            change directory'],
             ['',' clear         clears screen'],
-            ['',' echo <text>   print to screen'],
             ['',' date          shows date'],
+            ['',' echo <text>   print to screen'],
             ['',' help          list of commands'],
             ['',' ls            list files within the directory'],
+            ['',' mkdir <dir>   create a new directory'],
             ['',' neofetch      system info with coool art'],
+            ['',' rm <file>     remove a file'],
+            ['',' rm -r <dir>   remove a directory'],
+            ['',' touch <file>  create a new empty file'],
+            ['',' tree          visual hierarchy of files'],
             ['',' pwd           prints the current working directory'],
             ['',' whoami        who r u???'],
             ['b',''],
@@ -196,16 +210,20 @@ const CMDS = {
     },
     pwd: () => printf(CWD===`~` ? '/home/user' : '/home/user/' + CWD.slice(2)),
 
-    ls: () => {
+    ls: (args) => {
         const node=FS[CWD];
-        if(!node) {
-            printf('(empty)','b');
-            return;
-        } 
-        node.dirs.forEach(d=> {
-            printf(' '+d+'/','b');
+        const showAll=args.includes('-a');
+        node.dirs.forEach(d=>{
+            printf(' '+d+'/','b')
         })
-        node.files.forEach(f=> printf(' '+f));
+        node.files.forEach(f=>{
+            printf(' '+f)
+        })
+        if(showAll){
+            node.hidden?.forEach(hiddenfile=>{
+                printf(' '+hiddenfile,'gr');
+            })
+        }
     }, 
 
     cd: (args) => {
@@ -227,6 +245,10 @@ const CMDS = {
                 prompt();
             },500);
             return 'async';
+        }
+        if(trgt==='ucantopenme'){
+            printf("THIS FOLDER IS LOCKED.. U CANT OPEN IT x_x",'r')
+            return;
         }
         const next = CWD+'/'+trgt;
         if(FS[next]){
@@ -250,8 +272,106 @@ const CMDS = {
         } else {
             printf('cat: '+name+' [no such file]','r');
         }
-    }
+    },
 
+    mkdir: (args) => {
+        const name=args[0];
+        if(!name){
+            printf('mkdir: missing operand','r')
+            return
+        } 
+        if(FS[CWD].files.includes(name)){
+            printf('mkdir: cannot create directory \''+name+'\' [ file exists ]','r');
+            return;
+        }
+        if(FS[CWD].dirs.includes(name)){
+            printf('mkdir: cannot create directory \''+name+'\' [ file exists ]','r');
+            return
+        }
+        const path=CWD+'/'+name;
+        FS[path]={
+            dirs: [],
+            files: [],
+            hidden: []
+        }
+        FS[CWD].dirs.push(name)
+        printf('');
+    },
+
+    touch: (args) =>{
+        const name=args[0];
+        if(!name) {
+            printf('touch: missing operand','r');
+            return;
+        }
+        if(FS[CWD].dirs.includes(name)){
+            printf('touch: cannot touch \''+name+'\' [ a directory with that name already exists ]','r');
+            return;
+        }
+        if(FS[CWD].files.includes(name)){
+            printf(`file already exists.`,'r')
+            return;
+        }
+        FS[CWD].files.push(name);
+        FILES[name]=['(empty file)'];
+    },
+
+    rm: (args) => {
+        const rf=args.includes('-rf')||args.includes('-r');
+        const name=args.find(a=>!a.startsWith('-'));
+        if(!name) {
+            printf('rm: missing operand','r');
+            return;
+        }
+
+        const path=CWD+'/'+name;
+        const isdirec=FS[CWD].dirs.includes(name)
+        const isFile=FS[CWD].files.includes(name)
+        if(rf) {
+            if(isdirec){
+                Object.keys(FS).forEach(k=> {
+                    if(k===path||k.startsWith(path+'/')){
+                        delete FS[k];
+                    }
+                })
+                FS[CWD].dirs=FS[CWD].dirs.filter(d=>d!==name);
+            } else if (isFile) {
+                FS[CWD].files.splice(FS[CWD].files.indexOf(name),1);
+                delete FILES[name]
+            } else {
+                printf('rm: cannot remove \''+name+'\' [no such file or directory','r')
+            }
+            return
+        }
+
+        if(isdirec) {
+            printf('rm: cannot remove \''+name+'\': it is a directory','r');
+            printf('    use rm -r '+name+' to remove a directory','b')
+        } else if(isFile){
+            FS[CWD].files.splice(FS[CWD].files.indexOf(name),1)
+            delete FILES[name]
+        } else {
+            printf('rm: cannot remove \''+name+'\' [no such file or directory]')
+        }
+    },
+    tree: () => {
+        function draw(path,prefx){
+            const node=FS[path];
+            if(!node) return;
+            const all = [...node.dirs,...node.files]
+            all.forEach((name,i)=>{
+                const last=i===all.length-1;
+                const isdirec=node.dirs.includes(name);
+                const branch  = last ? '|-- ' : '|-> ';
+                printf(prefx+branch+name,isdirec?'b':'')
+                if(isdirec){
+                    draw(path+'/'+name,prefx+(last?'   ':'|    '))
+                }
+            })
+        }
+        printf(CWD)
+        draw(CWD,'');
+    }
 };
 
 function run(c) {
@@ -278,7 +398,7 @@ CMDS.neofetch();
 [
     ['b','welcome to archBTW'],
     ['','someone left this terminal unlocked..'],
-    ['y','type: help'],
+    ['y','to learn about various commands, type: help'],
 ].forEach(([c,t]) =>printf(t,c))
 printf('')
 prompt();
