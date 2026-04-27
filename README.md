@@ -7,21 +7,32 @@
 ## commands
 
 ```
-- echo <text>    prints text to screen
-- clear          clears screen
-- whoami         who r u??? 
-- neofetch       system info with awesome ascii art
-- help           to see list of commands available
+- cd            change directory
+- clear         clears screen
+- date          shows the date
+- echo <text>   prints text to screen
+- help          to see list of commands available
+- ls            list files under the directory
+- neofetch      system info with awesome ascii art
+- pwd           prints the current working directory
+- whoami        who r u??? 
 ```
 
-## future plans
-- [x] add neofetch command :P
-- [ ] more commands, more fun
-- [ ] command history, only if i feel smart
-- [ ] fake file system, to get the real cli hacker vibes hehe
-- [ ] ~~overengineer it~~
+### learnings
+- i have learned a lot of things while doing this project. love how this project has turned out to be. started by using basic event listeners and loops and gradually updated it line by line. added a command dispatcher fn that made my life much easier as adding commands was as simple as adding a key value pair in an object. used array index navigation for command history which is quite simple but makes this feel mroe like a terminal. 
+- used a simple object for the virtual ~~(fake ;)~~ file system. 
+
 
 ### changelogsss
+
+#### v1.0.5
+- finally working on a fake file system for this project. 
+- i have added ls, cd and pwd commands. the filesystem they list the directories on, is a fake one, which is simply a js object lol. but that does its job.
+
+#### v1.0.4
+- i have added tab completion. it basically completes the commands when u type a character of it and press tab, e.g. if i type `e` and press tab then it autocompletes it into `echo`. there's a catch, if there are more than one commands with the same characters like `neofetch`  and `name` then it only autocompletes when the alphabet after the common one has been typed. not sure how to fix this, will prob fix in future updates.
+- arrow key history has been added too. the history of previous commands/input can be tracked and checked using the up or down arrow key like how it can be done in a lot of terminals.
+- date command basically shows the date and time on the time of execution of the command.. this command is also kinda mandatory for all terminals lol.
 
 #### v1.0.3
 - add neofetch finally!! this took a lot of time. it shows the system info along with a cool ascii art of arch linux logo (copied the exact arch linux art directly from neofetch manually, tried using ai but didnot get any fruitful results.)
@@ -37,3 +48,10 @@
 
 - add two commands -> echo and clear. if the user types anything except those commands then the output is ‘command not found’.
 - im trying to go with the UI and the feel of the git bash terminal cause it feels soo home.
+
+## future plans
+- [x] add neofetch command :P
+- [ ] more commands, more fun
+- [ ] command history, only if i feel smart
+- [ ] fake file system, to get the real cli hacker vibes hehe
+- [ ] ~~overengineer it~~

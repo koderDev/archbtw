@@ -1,4 +1,24 @@
-// # TODO: neofetch, arrow key command history,tab completion,loreeeeee, add cowsay,
+let history=[],histidx=-1;
+
+let CWD='~';
+const FS={
+    '~':{
+        dirs: ['mypc','downloads','documents'],files:[]
+    },
+    '~/mypc':{
+        dirs: [], files: ['readme.txt','lore.md']
+    },
+    '~/downloads': {
+        dirs: [], files: ['dontopenme.tar.gz']
+    },
+    '~/documents': {
+        dirs: [], files: ['report.txt']
+    },
+    '~/code': {
+        dirs: ['project-archbtw'],files:[]
+    }
+}
+// # TODO: loreeeeee, add cowsay, virtual fs also
 
 const term=document.getElementById('term');
 
@@ -25,7 +45,7 @@ function prompt(){
     promptc.classList.add("prompt");
     term.appendChild(promptc);
     const p=document.createElement("div");
-    p.innerHTML='<span class="g">user@archbtw</span> <span class="r">TTY1</span> <span class="y">~</span> <span class="b">(main)</span>';
+    p.innerHTML=`<span class="g">user@archbtw</span> <span class="r">TTY1</span> <span class="y">${CWD}</span> <span class="b">(main)</span>`;
     promptc.appendChild(p);
     const row=document.createElement("div")
     row.id='input-row';
@@ -36,13 +56,48 @@ function prompt(){
     promptc.appendChild(row)
     inp.focus()
     inp.addEventListener('keydown',e=>{
-        if(e.key!=="Enter") return;
-        const v=inp.value.trim();
-        row.remove();
-        const done=document.createElement('div');
-        done.textContent='$ '+v;
-        promptc.appendChild(done);
-        run(v);
+        if(e.key==='Tab'){
+            e.preventDefault();
+            const partial=inp.value;
+            const hit=Object.keys(CMDS).filter(c=>c.startsWith(partial));
+            if(hit.length===1){
+                inp.value=hit[0];
+            } else if(hits.length>1){
+                row.remove();
+                printf('$ '+partial)
+                printf('  '+hits.join('   '),'b');
+                prompt();
+            }
+        }
+        if(e.key==="Enter") {
+            const v=inp.value.trim();
+            if(v){
+                history.unshift(v);
+                histidx=-1;
+            }
+            row.remove();
+            const done=document.createElement('div');
+            done.textContent='$ '+v;
+            promptc.appendChild(done);
+            run(v);
+        } else if(e.key==='ArrowUp'){
+            e.preventDefault();
+            if(histidx<history.length-1){
+                histidx++;
+                inp.value=history[histidx];
+            }
+        } else if(e.key==='ArrowDown'){
+            e.preventDefault();
+            if(histidx>0){
+                histidx--;
+                inp.value=history[histidx];
+            } else {
+                histidx=-1;
+                inp.value='';
+            }         
+        } else if (e.ctrlKey&&!['v','c','a','z','x','=','-','r'].includes(e.key)){
+            e.preventDefault();
+        }
     })
 }
 
@@ -55,11 +110,15 @@ const CMDS = {
             ['gr','Type `help` to see the list of commands.'],
             ['gr','Type `help name` to find out more about the command.'],
             ['b',''],
-            ['',' echo <text>   print to screen'],
+            ['',' cd            change directory'],
             ['',' clear         clears screen'],
-            ['',' whoami        who r u???'],
-            ['',' neofetch      system info with coool art'],
+            ['',' echo <text>   print to screen'],
+            ['',' date          shows date'],
             ['',' help          list of commands'],
+            ['',' ls            list files within the directory'],
+            ['',' neofetch      system info with coool art'],
+            ['',' pwd           prints the current working directory'],
+            ['',' whoami        who r u???'],
             ['b',''],
         ].forEach(([c,t])=>printf(t,c));
     },
@@ -115,6 +174,39 @@ const CMDS = {
         }
         printf('');
         
+    },
+    date: () =>{
+        printf(new Date().toString())
+    },
+    pwd: () => printf(CWD===`~` ? '/home/user' : '/home/user/' + CWD.slice(2)),
+
+    ls: () => {
+        const node=FS[CWD];
+        if(!node) {
+            printf('(empty)','b');
+            return;
+        } 
+        node.dirs.forEach(d=>printf(' '+d,'b'))
+        node.files.forEach(f=> printf(' '+f));
+    }, 
+
+    cd: (args) => {
+        const trgt=args[0];
+        if(!trgt || trgt==='~') {
+            CWD='~';
+            return;
+        }
+        if(trgt==='~') {
+            CWD='~';
+            return;
+        }
+        const next = CWD+'/'+trgt;
+        if(FS[next]){
+            CWD=next;
+        }
+        else {
+            printf('cd: '+trgt+' [no such file or directory]','r');
+        }
     }
 
 };
