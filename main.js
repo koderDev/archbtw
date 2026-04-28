@@ -93,6 +93,18 @@ function prompt(){
     promptc.appendChild(row)
     inp.focus()
     inp.addEventListener('keydown',e=>{
+
+        if(e.ctrlKey&& e.key==='c'){
+            e.preventDefault();
+            const done=document.createElement('div')
+            done.textContent='$ '+inp.value+'^C';
+            promptc.appendChild(done)
+            row.remove()
+            printf('')
+            prompt();
+            return;
+        }
+
         if(e.key==='Tab'){
             e.preventDefault();
             const partial=inp.value;
