@@ -4,6 +4,9 @@
 - trying to make it as minimal as i can.
 - a doppelganger of git bash :P
 
+## demo img, *yep thats on the web lol*
+<img width="610" height="637" alt="image" src="https://github.com/user-attachments/assets/5bbc2896-9cb4-4c10-aeba-58a4176cf3ae" />
+
 ## commands
 
 ```
