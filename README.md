@@ -1,31 +1,36 @@
 # archbtw
 
-- a web based terminal simulator to help people learn linux commands and experience the horror world of terminals. its arch btw ;)
+- a web based terminal simulator in which i have tried to replicate the UI of my old kitty config and my current git bash config. 
 - trying to make it as minimal as i can.
 - a doppelganger of git bash :P
 
 ## commands
 
 ```
-- cd            change directory
-- clear         clears screen
-- date          shows the date
-- echo <text>   prints text to screen
-- help          to see list of commands available
-- ls            list files under the directory
-- mkdir <dir>    create a new directory
-- neofetch       system info with coool art
-- rm <file>      remove a file
-- rm -r <dir>    remove a directory
-- touch <file>   create a new empty file
-- tree           visual hierarchy of files
-- pwd            prints the current working directory
-- whoami         who r u???
+- cd                change directory
+- clear             clears screen
+- date              shows date
+- echo <text>       print to screen
+- exit              quit, i guess
+- help              list of commands
+- hollywood         hackerrr vibesss
+- ls                list files within the directory
+- mkdir <dir>       create a new directory
+- neofetch          system info with coool art
+- rm <file>         remove a file
+- rm -r <dir>       remove a directory
+- touch <file>      create a new empty file
+- tree              visual hierarchy of files
+- pwd               prints the current working directory
+- uname             prints the os and kernel info
+- whoami            who r u???
 ```
 
 ### learnings
 - i have learned a lot of things while doing this project. love how this project has turned out to be. started by using basic event listeners and loops and gradually updated it line by line. added a command dispatcher fn that made my life much easier as adding commands was as simple as adding a key value pair in an object. used array index navigation for command history which is quite simple but makes this feel mroe like a terminal. 
 - used a simple object for the virtual ~~(fake ;)~~ file system. 
+- working on the virtual filesystem was a great learning experience, it has taught me a lot about objects and their methods in javascript. 
+- while working on the tree command, i finally learned how it actually works. then i got to brush up my skills while working on the tree command in which i have used recursive function.
 
 
 ### changelogsss
@@ -35,6 +40,9 @@
 - i have added ls, cd and pwd commands. the filesystem they list the directories on, is a fake one, which is simply a js object lol. but that does its job.
 - i have added mkdir, touch and rm commands with proper syntax like the real terminal has. spent a lot of time on this.
 - tree command has been added which lists out the visual hierarchy of the files in the current working directory.
+- i have added a lot of small commands like the exit, uname commands which basically print some text to the screen.
+- i have worked on the hollywood command which is kinda sick imo. it is the replica of the hollywood package in the aur that shows some hacker like text in the terminal.
+- i have fixed small issues in the commands and the sim is ready to get simminnn.
 
 #### v1.0.4
 - i have added tab completion. it basically completes the commands when u type a character of it and press tab, e.g. if i type `e` and press tab then it autocompletes it into `echo`. there's a catch, if there are more than one commands with the same characters like `neofetch`  and `name` then it only autocompletes when the alphabet after the common one has been typed. not sure how to fix this, will prob fix in future updates.
@@ -58,7 +66,8 @@
 
 ## future plans
 - [x] add neofetch command :P
+- [x] fake file system, to get the real cli hacker vibes hehe
+- [x] command history, only if i feel smart
+- [x] hollywood command for hacky vibess
 - [ ] more commands, more fun
-- [ ] command history, only if i feel smart
-- [ ] fake file system, to get the real cli hacker vibes hehe
 - [ ] ~~overengineer it~~

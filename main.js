@@ -6,13 +6,13 @@ const FS={
         dirs: ['mypc','downloads','documents','repo-archbtw'],files:['readme.txt','lore.md'], hidden: ['.hidden_logs','.secret']
     },
     '~/mypc':{
-        dirs: ['ucantopenme'], files: []
+        dirs: ['ucantopenme'], files: [], hidden:[]
     },
     '~/downloads': {
-        dirs: [], files: ['dontopenme.tar.gz']
+        dirs: [], files: ['dontopenme.tar.gz'], hidden: []
     },
     '~/documents': {
-        dirs: [], files: ['report.txt']
+        dirs: [], files: ['report.txt'], hidden: []
     },
 }
 
@@ -35,7 +35,7 @@ const FILES= {
     ],
     '.hidden_logs': [
         '[ERROR] unauthorized access',
-        '[INFO] origin: UNKNOWN',,
+        '[INFO] origin: UNKNOWN',
         '[INFO] why do they always find this file...'
     ],
     '.secret': [
@@ -43,6 +43,18 @@ const FILES= {
         'no secrets :D',
     ]
 }
+let hwinterval=null
+
+const HW_CHARS='QWERTYUIOPASDFGHJKLZXCVBNM{}|:"<>?!@#$%^&*()1234567890-_=+\][;/.,';
+const HW_MSGS=[
+    'decrypting files',
+    'access granted',
+    'bypassing firewall',
+    'downloading mod',
+    'establishing backgate',
+    'compiling the exploit'
+]
+
 // # TODO: loreeeeee, add cowsay, virtual fs also
 
 const term=document.getElementById('term');
@@ -87,10 +99,10 @@ function prompt(){
             const hit=Object.keys(CMDS).filter(c=>c.startsWith(partial));
             if(hit.length===1){
                 inp.value=hit[0];
-            } else if(hits.length>1){
+            } else if(hit.length>1){
                 row.remove();
                 printf('$ '+partial)
-                printf('  '+hits.join('   '),'b');
+                printf('  '+hit.join('   '),'b');
                 prompt();
             }
         }
@@ -139,7 +151,9 @@ const CMDS = {
             ['',' clear         clears screen'],
             ['',' date          shows date'],
             ['',' echo <text>   print to screen'],
+            ['',' exit          quit, i guess'],
             ['',' help          list of commands'],
+            ['',' hollywood     hackerrr vibesss'],
             ['',' ls            list files within the directory'],
             ['',' mkdir <dir>   create a new directory'],
             ['',' neofetch      system info with coool art'],
@@ -148,12 +162,16 @@ const CMDS = {
             ['',' touch <file>  create a new empty file'],
             ['',' tree          visual hierarchy of files'],
             ['',' pwd           prints the current working directory'],
+            ['',' uname         prints the os and kernel info'],
             ['',' whoami        who r u???'],
             ['b',''],
         ].forEach(([c,t])=>printf(t,c));
     },
     whoami: ()=>{
+        printf('user@archbtw','g')
         printf('...the system doesn\'t recognize u.','b');
+        printf('last login: unknown','b')
+        printf('sessions: classified','b')
     },
     neofetch:()=>{
         const art = [
@@ -191,7 +209,7 @@ const CMDS = {
             artspan.className=logoclr;
             artspan.textContent=a;
 
-            const lblspan=document.createElement('lblspan')
+            const lblspan=document.createElement('span')
             lblspan.textContent=lbl;
             const vspan=document.createElement('span')
             vspan.className=i===0?logoclr:'';
@@ -219,6 +237,9 @@ const CMDS = {
         node.files.forEach(f=>{
             printf(' '+f)
         })
+        if(!showAll && node.hidden?.length){
+            printf(' ('+node.hidden.length+' hidden files, use ls -a to show)','gr');
+        }
         if(showAll){
             node.hidden?.forEach(hiddenfile=>{
                 printf(' '+hiddenfile,'gr');
@@ -272,6 +293,11 @@ const CMDS = {
         } else {
             printf('cat: '+name+' [no such file]','r');
         }
+
+        // if(content[0]=='(empty file)'){ // yo chahiyena
+        //     printf('(empty file)','gr');
+        //     return
+        // }
     },
 
     mkdir: (args) => {
@@ -308,11 +334,17 @@ const CMDS = {
             printf('touch: cannot touch \''+name+'\' [ a directory with that name already exists ]','r');
             return;
         }
-        if(FS[CWD].files.includes(name)){
+        if(FS[CWD].files.includes(name)||(FS[CWD].hidden??[]).includes(name)){
             printf(`file already exists.`,'r')
             return;
         }
-        FS[CWD].files.push(name);
+
+        if(name.startsWith('.')){
+            FS[CWD].hidden=FS[CWD].hidden || [];
+            FS[CWD].hidden.push(name);
+        } else {
+            FS[CWD].files.push(name);
+        }
         FILES[name]=['(empty file)'];
     },
 
@@ -327,6 +359,7 @@ const CMDS = {
         const path=CWD+'/'+name;
         const isdirec=FS[CWD].dirs.includes(name)
         const isFile=FS[CWD].files.includes(name)
+        const isHidden=FS[CWD].hidden?.includes(name)
         if(rf) {
             if(isdirec){
                 Object.keys(FS).forEach(k=> {
@@ -347,8 +380,9 @@ const CMDS = {
         if(isdirec) {
             printf('rm: cannot remove \''+name+'\': it is a directory','r');
             printf('    use rm -r '+name+' to remove a directory','b')
-        } else if(isFile){
-            FS[CWD].files.splice(FS[CWD].files.indexOf(name),1)
+        } else if(isFile||isHidden){
+            const arr=isHidden?FS[CWD].hidden : FS[CWD].files;
+            arr.splice(arr.indexOf(name),1);
             delete FILES[name]
         } else {
             printf('rm: cannot remove \''+name+'\' [no such file or directory]')
@@ -371,6 +405,33 @@ const CMDS = {
         }
         printf(CWD)
         draw(CWD,'');
+    },
+    
+    hollywood: () => {
+        printf('    [HOLLYWOOD MODE] - press any key to exit','y')
+        let count=0;
+        hwinterval=setInterval(()=>{
+            if(count++ > 200){
+                clearInterval(hwinterval);
+                hwinterval=null;
+                printf('');
+                prompt()
+                return
+            }
+            const rand=()=>HW_CHARS[Math.floor(Math.random()*HW_CHARS.length)]
+            const noise=Array.from({length:60},rand).join('')
+            const msg=Math.random()>0.85 ? '    >> '+HW_MSGS[Math.floor(Math.random()*HW_MSGS.length)]:noise;
+            printf(msg,Math.random()>0.5?'g':'b')
+            term.scrollTop=term.scrollHeight;
+        },80);
+        return 'async';
+    },
+    exit: () => {
+        printf('you cant escape *-*','b')
+        printf('there is NO EXIT.','r')
+    },
+    uname:()=>{
+        printf('Linux archbtw 0.6.7-arch1-1 x86_64 GNU/Linux')
     }
 };
 
@@ -385,7 +446,7 @@ function run(c) {
         res=CMDS[cmd](args);
     }
     else {
-        printf(cmd + ": cmd not found","gr");
+        printf(cmd + ": cmd not found - type help for commands","r");
     }
 
     if(res==='async') return;
@@ -404,3 +465,13 @@ printf('')
 prompt();
 
 document.addEventListener('click',()=>document.getElementById('inp')?.focus())
+
+document.addEventListener('keydown',e=>{
+    if(hwinterval && e.key!=='Enter'){
+        e.preventDefault()
+        clearInterval(hwinterval)
+        hwinterval=null
+        printf('')
+        prompt()
+    }
+})
